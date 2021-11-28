@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2018 Hai Zhang <dreaming.in.code.zh@gmail.com>
+ * Copyright (c) 2018  Hai Zhang <dreaming.in.code.zh@gmail.com>
  * All Rights Reserved.
  */
 
 package me.zhanghai.android.files.filelist
 
+import android.annotation.SuppressLint
 import android.text.TextUtils
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
@@ -17,18 +18,15 @@ import java8.nio.file.Path
 import me.zhanghai.android.fastscroll.PopupTextProvider
 import me.zhanghai.android.files.R
 import me.zhanghai.android.files.databinding.FileItemBinding
-import me.zhanghai.android.files.file.FileItem
-import me.zhanghai.android.files.file.fileSize
-import me.zhanghai.android.files.file.formatShort
-import me.zhanghai.android.files.file.iconRes
+import me.zhanghai.android.files.file.*
 import me.zhanghai.android.files.provider.archive.isArchivePath
 import me.zhanghai.android.files.settings.Settings
 import me.zhanghai.android.files.ui.AnimatedListAdapter
 import me.zhanghai.android.files.ui.CheckableItemBackground
 import me.zhanghai.android.files.util.layoutInflater
 import me.zhanghai.android.files.util.valueCompat
-import java.util.Comparator
-import java.util.Locale
+import java.io.File
+import java.util.*
 
 class FileListAdapter(
     private val listener: Listener
@@ -159,6 +157,7 @@ class FileListAdapter(
         throw UnsupportedOperationException()
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: List<Any>) {
         val file = getItem(position)
         val binding = holder.binding
@@ -223,17 +222,25 @@ class FileListAdapter(
         if (hasBadge) {
             binding.badgeImage.setImageResource(badgeIconRes!!)
         }
+
         binding.nameText.text = file.name
-        binding.descriptionText.text = if (isDirectory) {
-            null
+        if (isDirectory) {
+            binding.lastUsedTime.text = attributes.lastModifiedTime().toInstant().formatLong()
+            binding.subItems.text =
+                File(file.path.toString()).listFiles()?.size.toString() + " items"
         } else {
             val context = binding.descriptionText.context
             val lastModificationTime = attributes.lastModifiedTime().toInstant()
                 .formatShort(context)
             val size = attributes.fileSize.formatHumanReadable(context)
-            val descriptionSeparator = context.getString(R.string.file_item_description_separator)
-            listOf(lastModificationTime, size).joinToString(descriptionSeparator)
+            val descriptionSeparator =
+                context.getString(R.string.file_item_description_separator)
+            binding.descriptionText.text =
+                listOf(descriptionSeparator, lastModificationTime, size).joinToString(
+                    descriptionSeparator
+                )
         }
+
         val isArchivePath = path.isArchivePath
         menu.findItem(R.id.action_copy)
             .setTitle(if (isArchivePath) R.string.file_item_action_extract else R.string.copy)
