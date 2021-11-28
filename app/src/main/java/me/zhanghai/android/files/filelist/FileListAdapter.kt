@@ -231,21 +231,17 @@ class FileListAdapter(
         }
 
         binding.nameText.text = file.name
+        binding.lastUsedTime.text = attributes.lastModifiedTime().toInstant().formatLong()
         if (isDirectory) {
-            binding.lastUsedTime.text = attributes.lastModifiedTime().toInstant().formatLong()
+            binding.descriptionText.text=null
             binding.subItems.text =
-                File(file.path.toString()).listFiles()?.size.toString() + " items"
+                String.format("%-3d%s",File(file.path.toString()).listFiles()?.size, "items")
         } else {
+            binding.subItems.text=String.format("        ")
             val context = binding.descriptionText.context
-            val lastModificationTime = attributes.lastModifiedTime().toInstant()
-                .formatShort(context)
             val size = attributes.fileSize.formatHumanReadable(context)
-            val descriptionSeparator =
-                context.getString(R.string.file_item_description_separator)
             binding.descriptionText.text =
-                listOf(descriptionSeparator, lastModificationTime, size).joinToString(
-                    descriptionSeparator
-                )
+                size
         }
 
         val isArchivePath = path.isArchivePath
