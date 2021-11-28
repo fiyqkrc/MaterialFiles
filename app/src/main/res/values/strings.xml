@@ -665,4 +665,5 @@
 
     <string name="shortcut_downloads_title">@string/navigation_standard_directory_downloads</string>
     <string name="shortcut_ftp_server_title">@string/ftp_server_title</string>
+    <string name="select_invert">select_invert</string>
 </resources>

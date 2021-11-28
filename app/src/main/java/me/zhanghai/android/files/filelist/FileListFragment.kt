@@ -825,6 +825,10 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
                 selectAllFiles()
                 true
             }
+            R.id.selectInvert -> {
+                selectInvertAllFiles()
+                true
+            }
             else -> false
         }
 
@@ -875,6 +879,10 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
 
     private fun selectAllFiles() {
         adapter.selectAllFiles()
+    }
+
+    private fun selectInvertAllFiles(){
+        adapter.selectInvertAllFiles()
     }
 
     private fun onPasteStateChanged(pasteState: PasteState) {

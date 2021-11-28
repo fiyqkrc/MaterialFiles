@@ -107,6 +107,13 @@ class FileListAdapter(
         listener.selectFiles(files, true)
     }
 
+    fun selectInvertAllFiles(){
+        for(index in 0 until itemCount){
+            val file = getItem(index)
+            listener.selectFile(file, file !in selectedFiles);
+        }
+    }
+
     private fun isFileSelectable(file: FileItem): Boolean {
         val pickOptions = pickOptions ?: return true
         return if (pickOptions.pickDirectory) {
